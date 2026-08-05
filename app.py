@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 
 from extensions import db, login_manager
@@ -9,14 +11,26 @@ from usuarios_iniciais import criar_usuarios_iniciais
 def criar_app():
     app = Flask(__name__)
 
-    app.config["SECRET_KEY"] = "dsfvg"
-    app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ] = "sqlite:///bandplaylist.db"
+    app.config["SECRET_KEY"] = os.environ.get(
+        "SECRET_KEY",
+        "troque-esta-chave"
+    )
 
-    app.config[
-        "SQLALCHEMY_TRACK_MODIFICATIONS"
-    ] = False
+    pasta_projeto = os.path.dirname(
+        os.path.abspath(__file__)
+    )
+
+    caminho_banco = os.path.join(
+        pasta_projeto,
+        "instance",
+        "bandplaylist.db"
+    )
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        f"sqlite:///{caminho_banco}"
+    )
+
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
     login_manager.init_app(app)
