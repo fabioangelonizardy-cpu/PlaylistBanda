@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+    Editar {{ musica.titulo }} - Band Playlist
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="container">
+
+    <div class="formulario">
+
+        <h1>Editar música</h1>
+
+        <p class="descricao-pagina">
+            Corrija as informações da música sugerida.
+        </p>
+
+        <div class="usuario-sugestao">
+            Sugerida por:
+            <strong>{{ musica.sugerida_por }}</strong>
+        </div>
+
+        <form method="POST">
+
+            <label for="titulo">
+                Nome da música *
+            </label>
+
+            <input
+                type="text"
+                id="titulo"
+                name="titulo"
+                value="{{ musica.titulo }}"
+                required
+            >
+
+            <label for="artista">
+                Artista *
+            </label>
+
+            <input
+                type="text"
+                id="artista"
+                name="artista"
+                value="{{ musica.artista }}"
+                required
+            >
+
+            <label for="link">
+                Link do YouTube ou Spotify
+            </label>
+
+            <input
+                type="url"
+                id="link"
+                name="link"
+                value="{{ musica.link or '' }}"
+                placeholder="https://..."
+            >
+
+            <label for="observacao">
+                Observações
+            </label>
+
+            <textarea
+                id="observacao"
+                name="observacao"
+                placeholder="Tom, afinação, dificuldade..."
+            >{{ musica.observacao or '' }}</textarea>
+
+            <div class="acoes-formulario">
+
+                <button
+                    class="salvar"
+                    type="submit"
+                >
+                    Salvar alterações
+                </button>
+
+                <a
+                    class="cancelar"
+                    href="{{ url_for(
+                        'main.detalhes_musica',
+                        musica_id=musica.id
+                    ) }}"
+                >
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block titulo %}
+            Band Playlist
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<header class="cabecalho-site">
+
+    <div class="cabecalho-conteudo">
+
+        <a
+            class="logo-site"
+            href="{{ url_for('main.home') }}"
+        >
+            🎸 Playlist Achados & Perdidos
+        </a>
+
+        {% if current_user.is_authenticated %}
+
+            <nav class="menu-principal">
+
+                <a
+                    href="{{ url_for('main.home') }}"
+                    class="{% if request.endpoint == 'main.home' %}ativo{% endif %}"
+                >
+                    Em votação
+                </a>
+
+                <a
+                    href="{{ url_for('main.playlist') }}"
+                    class="{% if request.endpoint == 'main.playlist' %}ativo{% endif %}"
+                >
+                    Playlist
+                </a>
+
+                <a
+                    href="{{ url_for('main.rejeitadas') }}"
+                    class="{% if request.endpoint == 'main.rejeitadas' %}ativo{% endif %}"
+                >
+                    Rejeitadas
+                </a>
+
+                <a
+                    href="{{ url_for('main.adicionar') }}"
+                    class="{% if request.endpoint == 'main.adicionar' %}ativo{% endif %}"
+                >
+                    Adicionar música
+                </a>
+
+            </nav>
+
+            <div class="conta-usuario">
+
+                <span>
+                    Olá, <strong>{{ current_user.nome }}</strong>
+                </span>
+
+                <a
+                    class="sair"
+                    href="{{ url_for('auth.logout') }}"
+                >
+                    Sair
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</header>
+
+<main class="conteudo-principal">
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+
+        {% for categoria, mensagem in mensagens %}
+
+            <div class="mensagem {{ categoria }}">
+                {{ mensagem }}
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+    {% block conteudo %}
+    {% endblock %}
+
+</main>
+
+{% block scripts %}
+{% endblock %}
+
+</body>
+
+</html>

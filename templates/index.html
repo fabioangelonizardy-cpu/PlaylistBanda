@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+    Em votação - Band Playlist
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="container">
+
+    <section class="titulo-pagina">
+
+        <div>
+            <h1>Músicas em votação</h1>
+
+            <p>
+                Vote nas músicas sugeridas pelos integrantes.
+            </p>
+        </div>
+
+        <a
+            class="adicionar"
+            href="{{ url_for('main.adicionar') }}"
+        >
+            + Adicionar música
+        </a>
+
+    </section>
+
+    <div class="area-pesquisa">
+
+        <input
+            type="text"
+            id="pesquisa-musica"
+            placeholder="Pesquisar por música, artista ou integrante..."
+        >
+
+        <div class="filtros-status">
+
+            <button
+                type="button"
+                class="filtro ativo"
+                data-status="todas"
+            >
+                Todas
+            </button>
+
+            <button
+                type="button"
+                class="filtro"
+                data-status="em-votação"
+            >
+                Em votação
+            </button>
+
+            <button
+                type="button"
+                class="filtro"
+                data-status="aprovada"
+            >
+                Aprovadas
+            </button>
+
+            <button
+                type="button"
+                class="filtro"
+                data-status="rejeitada"
+            >
+                Rejeitadas
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="lista-musicas">
+
+        {% for musica in musicas %}
+
+            <div
+                class="musica"
+                data-status="{{ musica.status|lower|replace(' ', '-') }}"
+                data-pesquisa="{{ musica.titulo }} {{ musica.artista }} {{ musica.sugerida_por }}"
+            >
+
+                <h2>
+
+                    <a
+                        class="titulo-musica"
+                        href="{{ url_for('main.detalhes_musica', musica_id=musica.id) }}"
+                    >
+                        {{ musica.titulo }}
+                    </a>
+
+                </h2>
+
+                <p class="artista">
+                    {{ musica.artista }}
+                </p>
+
+                <p class="autor">
+                    Sugerida por:
+                    <strong>{{ musica.sugerida_por }}</strong>
+                </p>
+
+                {% if musica.observacao %}
+
+                    <p class="observacao">
+                        {{ musica.observacao }}
+                    </p>
+
+                {% endif %}
+
+                <div class="acoes-musica">
+
+                    {% if musica.link %}
+
+                        <a
+                            class="link-musica"
+                            href="{{ musica.link }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Ouvir música
+                        </a>
+
+                    {% endif %}
+
+                    <a
+                        class="ver-detalhes"
+                        href="{{ url_for('main.detalhes_musica', musica_id=musica.id) }}"
+                    >
+                        Ver detalhes
+                    </a>
+
+                </div>
+
+                <div
+                    class="status status-{{ musica.status|lower|replace(' ', '-') }}"
+                >
+
+                    {% if musica.status == "Aprovada" %}
+
+                        ✅ Aprovada para a playlist
+
+                    {% elif musica.status == "Rejeitada" %}
+
+                        ❌ Rejeitada
+
+                    {% else %}
+
+                        ⏳ Em votação
+
+                    {% endif %}
+
+                </div>
+
+                <div class="votos">
+
+                    <span>
+                        👍 Sim: {{ musica.votos_sim }}
+                    </span>
+
+                    <span>
+                        👎 Não: {{ musica.votos_nao }}
+                    </span>
+
+                </div>
+
+                {% if musica.status == "Em votação" %}
+
+                    <form
+                        class="form-voto"
+                        method="POST"
+                        action="{{ url_for('main.votar', musica_id=musica.id) }}"
+                    >
+
+                        <p>
+                            Seu voto como:
+                            <strong>{{ current_user.nome }}</strong>
+                        </p>
+
+                        <div class="botoes-voto">
+
+                            <button
+                                class="botao-sim"
+                                type="submit"
+                                name="escolha"
+                                value="sim"
+                            >
+                                👍 Sim
+                            </button>
+
+                            <button
+                                class="botao-nao"
+                                type="submit"
+                                name="escolha"
+                                value="nao"
+                            >
+                                👎 Não
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                {% endif %}
+
+            </div>
+
+        {% else %}
+
+            <div class="mensagem-vazia">
+                <p>Nenhuma música foi adicionada ainda.</p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    <div
+        id="nenhum-resultado"
+        class="mensagem-vazia"
+        style="display: none;"
+    >
+        <p>Nenhuma música corresponde à pesquisa.</p>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% endblock %}

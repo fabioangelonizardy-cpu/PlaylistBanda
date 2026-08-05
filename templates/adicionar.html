@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+    Adicionar música - Band Playlist
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="container">
+
+    <div class="formulario">
+
+        <h1>Adicionar música</h1>
+
+        <p class="descricao-pagina">
+            Sugira uma nova música para votação da banda.
+        </p>
+
+        <form method="POST">
+
+            <label for="titulo">
+                Nome da música *
+            </label>
+
+            <input
+                type="text"
+                id="titulo"
+                name="titulo"
+                placeholder="Ex.: Master of Puppets"
+                required
+            >
+
+            <label for="artista">
+                Artista *
+            </label>
+
+            <input
+                type="text"
+                id="artista"
+                name="artista"
+                placeholder="Ex.: Metallica"
+                required
+            >
+
+            <div class="usuario-sugestao">
+
+                Música sugerida por:
+
+                <strong>{{ current_user.nome }}</strong>
+
+            </div>
+
+            <label for="link">
+                Link do YouTube ou Spotify
+            </label>
+
+            <input
+                type="url"
+                id="link"
+                name="link"
+                placeholder="https://..."
+            >
+
+            <label for="observacao">
+                Observações
+            </label>
+
+            <textarea
+                id="observacao"
+                name="observacao"
+                placeholder="Tom, afinação, dificuldade, solo..."
+            ></textarea>
+
+            <button
+                class="salvar"
+                type="submit"
+            >
+                Salvar música
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Playlist Oficial
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="container">
+
+    <section class="titulo-pagina">
+
+        <div>
+
+            <h1>
+                🎵 Playlist Oficial
+            </h1>
+
+            <p>
+                Músicas aprovadas pela banda.
+            </p>
+
+        </div>
+
+    </section>
+
+    <div class="lista-musicas">
+
+        {% for musica in musicas %}
+
+            <div class="musica">
+
+                <h2>
+
+                    <a
+                        class="titulo-musica"
+                        href="{{ url_for('main.detalhes_musica',
+                        musica_id=musica.id) }}"
+                    >
+                        {{ musica.titulo }}
+                    </a>
+
+                </h2>
+
+                <p class="artista">
+                    {{ musica.artista }}
+                </p>
+
+                <p class="autor">
+                    Sugerida por:
+                    {{ musica.sugerida_por }}
+                </p>
+
+                {% if musica.link %}
+
+                    <a
+                        class="link-musica"
+                        href="{{ musica.link }}"
+                        target="_blank"
+                    >
+                        Ouvir música
+                    </a>
+
+                    <a
+                        class="ver-detalhes"
+                        href="{{ url_for('main.detalhes_musica', musica_id=musica.id) }}"
+                    >
+                        Ver detalhes
+                    </a>
+
+                {% endif %}
+
+                <div class="status status-aprovada">
+                    ✅ Playlist Oficial
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="mensagem-vazia">
+
+                Ainda não existem músicas aprovadas.
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

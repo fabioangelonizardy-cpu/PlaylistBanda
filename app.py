@@ -1,10 +1,44 @@
 from flask import Flask
 
-app = Flask(__name__)
+from extensions import db, login_manager
+from auth import auth
+from routes import main
+from usuarios_iniciais import criar_usuarios_iniciais
 
-@app.route("/")
-def home():
-    return "<h1>Site da Banda</h1>"
+
+def criar_app():
+    app = Flask(__name__)
+
+    app.config["SECRET_KEY"] = "dsfvg"
+    app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ] = "sqlite:///bandplaylist.db"
+
+    app.config[
+        "SQLALCHEMY_TRACK_MODIFICATIONS"
+    ] = False
+
+    db.init_app(app)
+    login_manager.init_app(app)
+
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = (
+        "Faça login para acessar esta página."
+    )
+    login_manager.login_message_category = "erro"
+
+    app.register_blueprint(auth)
+    app.register_blueprint(main)
+
+    with app.app_context():
+        db.create_all()
+        criar_usuarios_iniciais()
+
+    return app
+
+
+app = criar_app()
+
 
 if __name__ == "__main__":
     app.run(debug=True)

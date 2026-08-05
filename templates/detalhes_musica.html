@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>{{ musica.titulo }} - Band Playlist</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <a class="voltar" href="{{ url_for('main.home') }}">
+        ← Voltar para as músicas
+    </a>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+
+    {% for categoria, mensagem in mensagens %}
+
+        <div class="mensagem {{ categoria }}">
+            {{ mensagem }}
+        </div>
+
+    {% endfor %}
+
+{% endwith %}
+
+    <div class="detalhes-musica">
+
+        <div class="cabecalho-musica">
+
+            <div>
+                <h1>{{ musica.titulo }}</h1>
+
+                <p class="artista">
+                    {{ musica.artista }}
+                </p>
+            </div>
+
+            <div class="status status-{{ musica.status|lower|replace(' ', '-') }}">
+
+                {% if musica.status == "Aprovada" %}
+                    ✅ Aprovada
+
+                {% elif musica.status == "Rejeitada" %}
+                    ❌ Rejeitada
+
+                {% else %}
+                    ⏳ Em votação
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <p class="autor">
+            Sugerida por:
+            <strong>{{ musica.sugerida_por }}</strong>
+        </p>
+
+        {% if musica.sugerida_por == current_user.nome %}
+
+    <div class="acoes-autor">
+
+        <a
+            class="botao-editar"
+            href="{{ url_for(
+                'main.editar_musica',
+                musica_id=musica.id
+            ) }}"
+        >
+            ✏️ Editar música
+        </a>
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'main.remover_musica',
+                musica_id=musica.id
+            ) }}"
+            onsubmit="return confirm('Tem certeza que deseja remover esta música? Todos os votos também serão apagados.');"
+        >
+
+            <button
+                class="botao-remover"
+                type="submit"
+            >
+                🗑 Remover música
+            </button>
+
+        </form>
+
+    </div>
+
+{% endif %}
+
+        {% if musica.observacao %}
+
+            <div class="bloco-detalhes">
+
+                <h2>Observações</h2>
+
+                <p>{{ musica.observacao }}</p>
+
+            </div>
+
+        {% endif %}
+
+        {% if musica.link %}
+
+            <a
+                class="link-musica botao-ouvir"
+                href="{{ musica.link }}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                🎧 Ouvir música
+            </a>
+
+        {% endif %}
+
+        <div class="resumo-votos">
+
+            <div>
+                <strong>{{ musica.votos_sim }}</strong>
+                <span>Sim</span>
+            </div>
+
+            <div>
+                <strong>{{ musica.votos_nao }}</strong>
+                <span>Não</span>
+            </div>
+
+            <div>
+                <strong>{{ nao_votaram|length }}</strong>
+                <span>Pendentes</span>
+            </div>
+
+        </div>
+
+        {% if musica.status == "Em votação" %}
+
+            <form
+                class="form-voto form-voto-detalhes"
+                method="POST"
+                action="{{ url_for('main.votar', musica_id=musica.id) }}"
+            >
+
+                <p>
+                    Votar como:
+                    <strong>{{ current_user.nome }}</strong>
+                </p>
+
+                <div class="botoes-voto">
+
+                    <button
+                        class="botao-sim"
+                        type="submit"
+                        name="escolha"
+                        value="sim"
+                    >
+                        👍 Sim
+                    </button>
+
+                    <button
+                        class="botao-nao"
+                        type="submit"
+                        name="escolha"
+                        value="nao"
+                    >
+                        👎 Não
+                    </button>
+
+                </div>
+
+            </form>
+
+        {% endif %}
+
+        <div class="listas-votos">
+
+            <div class="lista-voto lista-sim">
+
+                <h2>👍 Votaram Sim</h2>
+
+                {% for usuario in votos_sim %}
+
+                    <div class="integrante-voto">
+                        ✅ {{ usuario.nome }}
+                    </div>
+
+                {% else %}
+
+                    <p class="sem-votos">
+                        Ninguém votou Sim ainda.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="lista-voto lista-nao">
+
+                <h2>👎 Votaram Não</h2>
+
+                {% for usuario in votos_nao %}
+
+                    <div class="integrante-voto">
+                        ❌ {{ usuario.nome }}
+                    </div>
+
+                {% else %}
+
+                    <p class="sem-votos">
+                        Ninguém votou Não ainda.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="lista-voto lista-pendente">
+
+                <h2>⏳ Ainda não votaram</h2>
+
+                {% for usuario in nao_votaram %}
+
+                    <div class="integrante-voto">
+                        ○ {{ usuario.nome }}
+                    </div>
+
+                {% else %}
+
+                    <p class="sem-votos">
+                        Todos já votaram.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
